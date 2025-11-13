@@ -1,0 +1,75 @@
+<odoo>
+    <data>
+
+        <record id="view_med_goal_definition_tree" model="ir.ui.view">
+            <field name="name">med.goal.definition.tree</field>
+            <field name="model">med.goal.definition</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="area_id"/>
+                    <field name="specialty_id"/>
+                    <field name="target_type"/>
+                    <field name="weight"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_med_goal_definition_form" model="ir.ui.view">
+            <field name="name">med.goal.definition.form</field>
+            <field name="model">med.goal.definition</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="area_id"/>
+                            <field name="specialty_id"/>
+                        </group>
+                        <group>
+                            <field name="target_type"/>
+                            <field name="default_target_value"/>
+                            <field name="weight"/>
+                            <field name="active"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Assignments">
+                                <field name="assignment_ids">
+                                    <tree editable="bottom">
+                                        <field name="employee_id"/>
+                                        <field name="evaluation_cycle_id"/>
+                                        <field name="target_value"/>
+                                        <field name="actual_value"/>
+                                        <field name="completion_rate"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_med_goal_definition" model="ir.actions.act_window">
+            <field name="name">Goal Definitions</field>
+            <field name="res_model">med.goal.definition</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_med_goal_definition"
+                  name="Goal Definitions"
+                  parent="menu_med_goals_configuration"
+                  action="action_med_goal_definition"
+                  sequence="3"/>
+    </data>
+</odoo>

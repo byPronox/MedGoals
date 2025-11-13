@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="group_med_goals_user" model="res.groups">
+            <field name="name">MED-GOALS User</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+
+        <record id="group_med_goals_manager" model="res.groups">
+            <field name="name">MED-GOALS Manager</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('group_med_goals_user'))]"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+
+        <menuitem id="menu_med_goals_root"
+                  name="MED-GOALS"
+                  sequence="10"/>
+
+        <menuitem id="menu_med_goals_configuration"
+                  name="Configuration"
+                  parent="menu_med_goals_root"
+                  sequence="5"/>
+
+        <menuitem id="menu_med_goals_operations"
+                  name="Operations"
+                  parent="menu_med_goals_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_med_goals_reporting"
+                  name="Reporting"
+                  parent="menu_med_goals_root"
+                  sequence="20"/>
+
+    </data>
+</odoo>

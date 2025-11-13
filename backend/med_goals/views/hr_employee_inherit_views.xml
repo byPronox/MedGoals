@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Pestaña Performance (MED-GOALS) en el formulario de Empleado -->
+        <record id="view_employee_form_med_goals" model="ir.ui.view">
+            <field name="name">hr.employee.form.med.goals</field>
+            <field name="model">hr.employee</field>
+            <!-- Esta vista base es la que ya te funcionaba -->
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <!-- Insertamos una nueva pestaña después de la pestaña hr_settings -->
+                <xpath expr="//page[@name='hr_settings']" position="after">
+                    <page string="Performance (MED-GOALS)" name="performance_tab">
+                        <group string="Classification">
+                            <field name="med_area_id"/>
+                            <field name="med_specialty_id"/>
+                        </group>
+
+                        <group string="Last Evaluation">
+                            <field name="last_score" readonly="1"/>
+                            <field name="last_evaluation_date" readonly="1"/>
+                            <field name="is_top_performer" readonly="1"/>
+                            <field name="rank_area" readonly="1"/>
+                            <field name="rank_specialty" readonly="1"/>
+                        </group>
+
+                        <notebook>
+                            <!-- Metas asignadas -->
+                            <page string="Goal Assignments">
+                                <field name="goal_assignment_ids"
+                                       context="{'default_employee_id': active_id}">
+                                    <tree editable="bottom">
+                                        <field name="evaluation_cycle_id"/>
+                                        <field name="goal_id"/>
+                                        <field name="target_value"/>
+                                        <field name="actual_value"/>
+                                        <field name="completion_rate"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <!-- Historial de scores -->
+                            <page string="Score History">
+                                <field name="employee_score_ids">
+                                    <tree>
+                                        <field name="cycle_id"/>
+                                        <field name="score_total"/>
+                                        <field name="score_goals"/>
+                                        <field name="score_productivity"/>
+                                        <field name="score_quality"/>
+                                        <field name="score_economic"/>
+                                        <field name="rank_global"/>
+                                        <field name="rank_area"/>
+                                        <field name="rank_specialty"/>
+                                        <field name="is_top_performer"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <!-- Logs de desempeño -->
+                            <page string="Performance Logs">
+                                <field name="performance_log_ids"
+                                       context="{'default_employee_id': active_id}">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="name"/>
+                                        <field name="assignment_id"/>
+                                        <field name="metric_value"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+
+        <!-- List view -->
+        <record id="view_med_scoring_config_tree" model="ir.ui.view">
+            <field name="name">med.scoring.config.tree</field>
+            <field name="model">med.scoring.config</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="company_id"/>
+                    <field name="weight_goals"/>
+                    <field name="weight_productivity"/>
+                    <field name="weight_quality"/>
+                    <field name="weight_economic"/>
+                    <field name="total_weight"/>
+                    <field name="normalized"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="view_med_scoring_config_form" model="ir.ui.view">
+            <field name="name">med.scoring.config.form</field>
+            <field name="model">med.scoring.config</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Weights">
+                            <field name="weight_goals"/>
+                            <field name="weight_productivity"/>
+                            <field name="weight_quality"/>
+                            <field name="weight_economic"/>
+                        </group>
+                        <group string="Validation">
+                            <field name="total_weight" readonly="1"/>
+                            <field name="normalized" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_med_scoring_config" model="ir.actions.act_window">
+            <field name="name">Scoring Configuration</field>
+            <field name="res_model">med.scoring.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu (Configuration) -->
+        <menuitem id="menu_med_scoring_config"
+                  name="Scoring Configuration"
+                  parent="menu_med_goals_configuration"
+                  action="action_med_scoring_config"
+                  sequence="4"/>
+    </data>
+</odoo>

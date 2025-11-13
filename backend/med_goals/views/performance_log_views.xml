@@ -1,0 +1,60 @@
+<odoo>
+    <data>
+
+        <!-- List view -->
+        <record id="view_med_performance_log_tree" model="ir.ui.view">
+            <field name="name">med.performance.log.tree</field>
+            <field name="model">med.performance.log</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="date"/>
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="assignment_id"/>
+                    <field name="metric_value"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="view_med_performance_log_form" model="ir.ui.view">
+            <field name="name">med.performance.log.form</field>
+            <field name="model">med.performance.log</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="assignment_id"/>
+                        </group>
+                        <group>
+                            <field name="metric_value"/>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_med_performance_log" model="ir.actions.act_window">
+            <field name="name">Performance Logs</field>
+            <field name="res_model">med.performance.log</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu (Operations) -->
+        <menuitem id="menu_med_performance_log"
+                  name="Performance Logs"
+                  parent="menu_med_goals_operations"
+                  action="action_med_performance_log"
+                  sequence="2"/>
+    </data>
+</odoo>

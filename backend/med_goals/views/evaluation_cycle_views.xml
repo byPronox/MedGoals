@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- List view -->
+        <record id="view_med_evaluation_cycle_tree" model="ir.ui.view">
+            <field name="name">med.evaluation.cycle.tree</field>
+            <field name="model">med.evaluation.cycle</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="company_id"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="state"/>
+                    <field name="scoring_config_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="view_med_evaluation_cycle_form" model="ir.ui.view">
+            <field name="name">med.evaluation.cycle.form</field>
+            <field name="model">med.evaluation.cycle</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <header>
+                            <button name="action_open"
+                                    type="object"
+                                    string="Open"
+                                    class="btn-primary"/>
+                            <button name="action_close"
+                                    type="object"
+                                    string="Close &amp; Compute Scores"
+                                    class="btn-primary"/>
+                            <field name="state" widget="statusbar"/>
+                        </header>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="scoring_config_id"/>
+                        </group>
+                        <notebook>
+                            <page string="Assignments">
+                                <field name="assignment_ids">
+                                    <tree editable="bottom">
+                                        <field name="employee_id"/>
+                                        <field name="goal_id"/>
+                                        <field name="target_value"/>
+                                        <field name="actual_value"/>
+                                        <field name="completion_rate"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Employee Scores">
+                                <field name="employee_score_ids">
+                                    <tree>
+                                        <field name="employee_id"/>
+                                        <field name="score_total"/>
+                                        <field name="score_goals"/>
+                                        <field name="rank_global"/>
+                                        <field name="rank_area"/>
+                                        <field name="rank_specialty"/>
+                                        <field name="is_top_performer"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_med_evaluation_cycle" model="ir.actions.act_window">
+            <field name="name">Evaluation Cycles</field>
+            <field name="res_model">med.evaluation.cycle</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu (Operations) -->
+        <menuitem id="menu_med_evaluation_cycle"
+                  name="Evaluation Cycles"
+                  parent="menu_med_goals_operations"
+                  action="action_med_evaluation_cycle"
+                  sequence="3"/>
+    </data>
+</odoo>

@@ -1,20 +1,12 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
 
 class HREmployee(models.Model):
     _inherit = "hr.employee"
 
-    med_area_id = fields.Many2one(
-        "med.area",
-        string="MED Area",
-        check_company=True,
-        help="Business unit / department where the employee belongs for MED-GOALS."
-    )
-    med_specialty_id = fields.Many2one(
-        "med.specialty",
-        string="MED Specialty",
-        check_company=True,
-        help="Employee specialty used for performance evaluation in MED-GOALS."
-    )
+    med_area_id = fields.Many2one("med.area", string="MED Area")
+    med_specialty_id = fields.Many2one("med.specialty", string="MED Specialty")
 
     goal_assignment_ids = fields.One2many(
         "med.goal.assignment",
@@ -78,3 +70,61 @@ class HREmployee(models.Model):
                 employee.is_top_performer = False
                 employee.rank_area = 0
                 employee.rank_specialty = 0
+
+    # -----------------------------
+    # BACK-END VALIDATIONS (SENSITIVE DATA)
+    # -----------------------------
+
+    @api.constrains("private_email")
+    def _check_private_email(self):
+        """Private email must be a valid basic email format."""
+        for employee in self:
+            email = (employee.private_email or "").strip()
+            if not email:
+                # allow empty, only validate if user set a value
+                continue
+
+            # Validación muy simple para el proyecto (no RFC completo)
+            if "@" not in email or "." not in email.split("@")[-1]:
+                raise ValidationError(
+                    _("Private email must be a valid email address.")
+                )
+
+    @api.constrains("private_phone")
+    def _check_private_phone(self):
+        """Private phone must contain only digits and have a reasonable length."""
+        for employee in self:
+            phone = (employee.private_phone or "").strip()
+            if not phone:
+                continue
+
+            if not phone.isdigit():
+                raise ValidationError(
+                    _("Private phone must contain only digits.")
+                )
+
+            if len(phone) < 7 or len(phone) > 15:
+                raise ValidationError(
+                    _("Private phone length must be between 7 and 15 digits.")
+                )
+
+    @api.constrains("identification_id")
+    def _check_identification_id(self):
+        """
+        Identification ID is considered a sensitive personal document.
+        For Ecuador, we enforce 10 numeric characters as a basic rule.
+        """
+        for employee in self:
+            ident = (employee.identification_id or "").strip()
+            if not ident:
+                continue
+
+            if not ident.isdigit():
+                raise ValidationError(
+                    _("Identification ID must contain only digits.")
+                )
+
+            if len(ident) != 10:
+                raise ValidationError(
+                    _("Identification ID must have exactly 10 digits (Ecuadorian ID format).")
+                )

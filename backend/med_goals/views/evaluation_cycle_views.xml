@@ -27,7 +27,7 @@
                     <sheet>
                         <header>
                             <button name="action_open"
-                                    type="object"
+                                       type="object"
                                     string="Open"
                                     class="btn-primary"
                                     modifiers="{'invisible': [('state', '!=', 'draft')]}"/>

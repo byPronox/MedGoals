@@ -28,11 +28,12 @@
                             <field name="code"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
-                            <field name="area_id"/>
+                        <group string="Classification">
+                            <field name="area_id"
+                                   domain="[('company_id', '=', company_id)]"/>
                             <field name="specialty_id"/>
                         </group>
-                        <group>
+                        <group string="Target &amp; Weight">
                             <field name="target_type"/>
                             <field name="default_target_value"/>
                             <field name="weight"/>

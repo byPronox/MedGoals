@@ -27,20 +27,24 @@
                 <form>
                     <sheet>
                         <header>
-                            <field name="state" widget="statusbar"/>
+                            <field name="state"
+                                   widget="statusbar"
+                                   statusbar_visible="draft,in_progress,done,cancelled"/>
                         </header>
                         <group>
                             <field name="name"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
+                        <group string="Assignment Context">
                             <field name="employee_id"/>
                             <field name="area_id" readonly="1"/>
                             <field name="specialty_id" readonly="1"/>
-                            <field name="evaluation_cycle_id"/>
+                            <field name="evaluation_cycle_id"
+                                   domain="[('company_id', '=', company_id), ('state', '!=', 'closed')]"/>
                         </group>
-                        <group>
-                            <field name="goal_id"/>
+                        <group string="Goal Target">
+                            <field name="goal_id"
+                                   domain="[('company_id', '=', company_id)]"/>
                             <field name="target_value"/>
                             <field name="unit"/>
                             <field name="actual_value"/>

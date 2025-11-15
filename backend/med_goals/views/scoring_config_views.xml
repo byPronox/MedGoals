@@ -27,7 +27,7 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
+                        <group string="General">
                             <field name="name"/>
                             <field name="company_id"/>
                             <field name="active"/>

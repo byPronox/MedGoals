@@ -1,6 +1,6 @@
 # med_goals/__manifest__.py
 {
-    "name": "Performance Evaluation System (MED-GOALS)",
+    "name": "MED-GOALS",
     "summary": "Employee performance evaluation, goals, cycles and leaderboards.",
     "description": """
 Performance Evaluation System (MED-GOALS)
@@ -10,7 +10,7 @@ It defines goals, assignments, performance logs, evaluation cycles,
 scoring configuration and computed rankings / top performers per employee.
     """,
     "version": "17.0.1.0.0",
-    "author": "Stefan Jativa",
+    "author": "Stefan Jativa & Justin Gomezcoello",
     "website": "https://example.com",
     "category": "Human Resources",
     "license": "LGPL-3",

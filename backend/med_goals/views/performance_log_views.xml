@@ -23,19 +23,21 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
+                        <group string="General">
                             <field name="name"/>
                             <field name="date"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
-                            <field name="employee_id"/>
-                            <field name="assignment_id"/>
+                        <group string="Context">
+                            <field name="employee_id"
+                                   domain="[('company_id', '=', company_id)]"/>
+                            <field name="assignment_id"
+                                   domain="[('employee_id', '=', employee_id)]"/>
                         </group>
-                        <group>
+                        <group string="Measurement">
                             <field name="metric_value"/>
                         </group>
-                        <group>
+                        <group string="Notes">
                             <field name="notes"/>
                         </group>
                     </sheet>

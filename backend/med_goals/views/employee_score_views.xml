@@ -6,7 +6,7 @@
             <field name="name">med.employee.score.tree</field>
             <field name="model">med.employee.score</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree string="Employee Scores">
                     <field name="employee_id"/>
                     <field name="cycle_id"/>
                     <field name="score_total"/>
@@ -27,7 +27,7 @@
             <field name="name">med.employee.score.form</field>
             <field name="model">med.employee.score</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="Employee Score">
                     <sheet>
                         <group>
                             <field name="employee_id"/>

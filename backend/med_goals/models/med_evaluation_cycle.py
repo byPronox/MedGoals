@@ -1,8 +1,11 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
 
 class MedEvaluationCycle(models.Model):
     _name = "med.evaluation.cycle"
     _description = "Evaluation Cycle (Period)"
+    _order = "date_start desc, name"
 
     name = fields.Char(required=True)
     company_id = fields.Many2one(
@@ -21,6 +24,7 @@ class MedEvaluationCycle(models.Model):
             ("closed", "Closed"),
         ],
         default="draft",
+        required=True,
     )
 
     scoring_config_id = fields.Many2one(
@@ -40,12 +44,36 @@ class MedEvaluationCycle(models.Model):
         string="Employee Scores",
     )
 
+    _sql_constraints = [
+        (
+            "name_company_uniq",
+            "unique(name, company_id)",
+            "The evaluation cycle name must be unique per company.",
+        )
+    ]
+
+    # BACK-END VALIDATION: date_end must be >= date_start
+    @api.constrains("date_start", "date_end")
+    def _check_dates(self):
+        for rec in self:
+            if rec.date_start and rec.date_end and rec.date_end < rec.date_start:
+                raise ValidationError(
+                    _("End date must be greater than or equal to start date.")
+                )
+
     def action_open(self):
         for rec in self:
+            if rec.state != "draft":
+                continue
             rec.state = "open"
 
     def action_close(self):
         for rec in self:
+            if rec.state == "closed":
+                continue
+            # Optional: evita cerrar ciclos sin assignments
+            # if not rec.assignment_ids:
+            #     raise ValidationError(_("You cannot close a cycle without assignments."))
             rec._compute_scores()
             rec.state = "closed"
 
@@ -58,7 +86,7 @@ class MedEvaluationCycle(models.Model):
         old_scores = Score.search([("cycle_id", "=", self.id)])
         old_scores.unlink()
 
-        # Agrupar assignments por empleado
+        # Group assignments by employee
         assignments = self.assignment_ids.filtered(lambda a: a.state != "cancelled")
         by_employee = {}
         for a in assignments:
@@ -88,12 +116,13 @@ class MedEvaluationCycle(models.Model):
                 }
             )
 
-        # Asignar ranking global / por área / por especialidad
+        # Assign rankings
         self._compute_rankings()
 
     def _compute_rankings(self):
         scores = self.employee_score_ids.sorted(lambda s: -s.score_total)
 
+        # Global rank
         rank = 0
         last_score = None
         for s in scores:
@@ -102,7 +131,7 @@ class MedEvaluationCycle(models.Model):
                 last_score = s.score_total
             s.rank_global = rank
 
-        # por área
+        # Rank by area
         scores_by_area = {}
         for s in scores:
             area = s.employee_id.med_area_id
@@ -118,7 +147,7 @@ class MedEvaluationCycle(models.Model):
                     last_score = s.score_total
                 s.rank_area = rank
 
-        # por especialidad
+        # Rank by specialty
         scores_by_spec = {}
         for s in scores:
             spec = s.employee_id.med_specialty_id
@@ -134,7 +163,7 @@ class MedEvaluationCycle(models.Model):
                     last_score = s.score_total
                 s.rank_specialty = rank
 
-        # marcar top performers (ejemplo: top 3 global)
+        # Mark top global performers (e.g., top 3)
         top_global = scores.sorted(lambda s: s.rank_global)[:3]
         for s in scores:
             s.is_top_performer = s in top_global

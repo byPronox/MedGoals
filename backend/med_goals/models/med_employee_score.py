@@ -1,4 +1,5 @@
-from odoo import models, fields
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class MedEmployeeScore(models.Model):
     _name = "med.employee.score"
@@ -31,3 +32,32 @@ class MedEmployeeScore(models.Model):
     rank_specialty = fields.Integer(string="Specialty Rank")
 
     is_top_performer = fields.Boolean(string="Top Performer")
+
+    @api.constrains(
+        "score_total",
+        "score_goals",
+        "score_productivity",
+        "score_quality",
+        "score_economic",
+    )
+    def _check_scores_range(self):
+        """Back-end validation for sensitive HR performance data.
+
+        All scores must be between 0 and 10. This ensures that even if
+        someone bypasses the UI/JS, the database will never store
+        invalid performance values.
+        """
+        for record in self:
+            fields_to_check = [
+                ("score_total", _("Total Score")),
+                ("score_goals", _("Goals Score")),
+                ("score_productivity", _("Productivity Score")),
+                ("score_quality", _("Quality Score")),
+                ("score_economic", _("Economic Contribution Score")),
+            ]
+            for field_name, label in fields_to_check:
+                value = record[field_name]
+                if value is not False and not (0.0 <= value <= 10.0):
+                    raise ValidationError(
+                        _("%s must be between 0 and 10.") % label
+                    )

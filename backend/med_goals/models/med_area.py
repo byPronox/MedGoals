@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, _
 
 class MedArea(models.Model):
     _name = "med.area"
@@ -17,3 +17,11 @@ class MedArea(models.Model):
         "med_area_id",
         string="Employees",
     )
+
+    _sql_constraints = [
+        (
+            "med_area_code_company_uniq",
+            "unique(code, company_id)",
+            "The MED Area code must be unique per company."
+        ),
+    ]

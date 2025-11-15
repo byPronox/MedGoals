@@ -20,13 +20,16 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
+                        <group string="General">
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="area_id"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
+                        <group string="Classification">
+                            <field name="area_id"
+                                   domain="[('company_id', '=', company_id)]"/>
+                        </group>
+                        <group string="Description">
                             <field name="description"/>
                         </group>
                     </sheet>

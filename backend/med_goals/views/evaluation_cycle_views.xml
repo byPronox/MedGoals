@@ -27,24 +27,31 @@
                     <sheet>
                         <header>
                             <button name="action_open"
-                                    type="object"
+                                       type="object"
                                     string="Open"
-                                    class="btn-primary"/>
+                                    class="btn-primary"
+                                    modifiers="{'invisible': [('state', '!=', 'draft')]}"/>
+
                             <button name="action_close"
                                     type="object"
                                     string="Close &amp; Compute Scores"
-                                    class="btn-primary"/>
-                            <field name="state" widget="statusbar"/>
+                                    class="btn-primary"
+                                    modifiers="{'invisible': [('state', '!=', 'open')]}"/>
+
+                            <field name="state"
+                                widget="statusbar"
+                                statusbar_visible="draft,open,closed"/>
                         </header>
+
                         <group>
                             <field name="name"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
+                        <group string="Period">
                             <field name="date_start"/>
                             <field name="date_end"/>
                         </group>
-                        <group>
+                        <group string="Scoring Configuration">
                             <field name="scoring_config_id"/>
                         </group>
                         <notebook>

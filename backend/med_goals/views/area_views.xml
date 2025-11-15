@@ -5,7 +5,7 @@
             <field name="name">med.area.tree</field>
             <field name="model">med.area</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree string="MED Areas">
                     <field name="name"/>
                     <field name="code"/>
                     <field name="company_id"/>
@@ -17,14 +17,14 @@
             <field name="name">med.area.form</field>
             <field name="model">med.area</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="MED Area">
                     <sheet>
                         <group>
                             <field name="name"/>
                             <field name="code"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
+                        <group string="Description">
                             <field name="description"/>
                         </group>
                     </sheet>

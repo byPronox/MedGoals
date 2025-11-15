@@ -1,8 +1,11 @@
-from odoo import models, fields
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
 
 class MedGoalDefinition(models.Model):
     _name = "med.goal.definition"
     _description = "Goal Definition"
+    _order = "name asc, id asc"
 
     name = fields.Char(required=True)
     code = fields.Char(required=True)
@@ -37,3 +40,23 @@ class MedGoalDefinition(models.Model):
         "goal_id",
         string="Assignments",
     )
+
+    _sql_constraints = [
+        (
+            "med_goal_definition_code_company_uniq",
+            "unique (company_id, code)",
+            "The goal code must be unique per company.",
+        ),
+    ]
+
+    @api.constrains("weight", "default_target_value")
+    def _check_weight_and_target(self):
+        for rec in self:
+            if rec.weight <= 0:
+                raise ValidationError(
+                    "Goal weight must be greater than zero."
+                )
+            if rec.default_target_value and rec.default_target_value < 0:
+                raise ValidationError(
+                    "Default target value cannot be negative."
+                )

@@ -1,10 +1,18 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
 
 class HREmployee(models.Model):
     _inherit = "hr.employee"
 
-    med_area_id = fields.Many2one("med.area", string="MED Area")
-    med_specialty_id = fields.Many2one("med.specialty", string="MED Specialty")
+    med_area_id = fields.Many2one(
+        "med.area",
+        string="MED Area",
+    )
+    med_specialty_id = fields.Many2one(
+        "med.specialty",
+        string="MED Specialty",
+    )
 
     goal_assignment_ids = fields.One2many(
         "med.goal.assignment",
@@ -68,3 +76,13 @@ class HREmployee(models.Model):
                 employee.is_top_performer = False
                 employee.rank_area = 0
                 employee.rank_specialty = 0
+
+    @api.constrains("med_area_id", "company_id")
+    def _check_med_area_company(self):
+        """Ensure the MED Area belongs to the same company as the employee."""
+        for employee in self:
+            if employee.med_area_id and employee.med_area_id.company_id:
+                if employee.company_id and employee.med_area_id.company_id != employee.company_id:
+                    raise ValidationError(
+                        "The MED Area must belong to the same company as the employee."
+                    )

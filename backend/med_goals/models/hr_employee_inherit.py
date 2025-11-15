@@ -1,10 +1,20 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 class HREmployee(models.Model):
     _inherit = "hr.employee"
 
-    med_area_id = fields.Many2one("med.area", string="MED Area")
-    med_specialty_id = fields.Many2one("med.specialty", string="MED Specialty")
+    med_area_id = fields.Many2one(
+        "med.area",
+        string="MED Area",
+        check_company=True,
+        help="Business unit / department where the employee belongs for MED-GOALS."
+    )
+    med_specialty_id = fields.Many2one(
+        "med.specialty",
+        string="MED Specialty",
+        check_company=True,
+        help="Employee specialty used for performance evaluation in MED-GOALS."
+    )
 
     goal_assignment_ids = fields.One2many(
         "med.goal.assignment",

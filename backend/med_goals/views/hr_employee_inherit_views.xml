@@ -2,19 +2,21 @@
 <odoo>
     <data>
 
-        <!-- Pestaña Performance (MED-GOALS) en el formulario de Empleado -->
+        <!-- MED-GOALS Performance Tab in Employee Form -->
         <record id="view_employee_form_med_goals" model="ir.ui.view">
             <field name="name">hr.employee.form.med.goals</field>
             <field name="model">hr.employee</field>
-            <!-- Esta vista base es la que ya te funcionaba -->
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-                <!-- Insertamos una nueva pestaña después de la pestaña hr_settings -->
+                <!-- Insert after hr_settings tab -->
                 <xpath expr="//page[@name='hr_settings']" position="after">
                     <page string="Performance (MED-GOALS)" name="performance_tab">
                         <group string="Classification">
                             <field name="med_area_id"/>
-                            <field name="med_specialty_id"/>
+                            <!-- Dependent dropdown: specialties filtered by MED Area -->
+                            <field name="med_specialty_id"
+                                   domain="[('area_id', '=', med_area_id)]"
+                                   context="{'default_area_id': med_area_id}"/>
                         </group>
 
                         <group string="Last Evaluation">
@@ -26,7 +28,7 @@
                         </group>
 
                         <notebook>
-                            <!-- Metas asignadas -->
+                            <!-- Goal Assignments -->
                             <page string="Goal Assignments">
                                 <field name="goal_assignment_ids"
                                        context="{'default_employee_id': active_id}">
@@ -41,7 +43,7 @@
                                 </field>
                             </page>
 
-                            <!-- Historial de scores -->
+                            <!-- Score History -->
                             <page string="Score History">
                                 <field name="employee_score_ids">
                                     <tree>
@@ -59,7 +61,7 @@
                                 </field>
                             </page>
 
-                            <!-- Logs de desempeño -->
+                            <!-- Performance Logs -->
                             <page string="Performance Logs">
                                 <field name="performance_log_ids"
                                        context="{'default_employee_id': active_id}">
@@ -79,3 +81,4 @@
 
     </data>
 </odoo>
+    

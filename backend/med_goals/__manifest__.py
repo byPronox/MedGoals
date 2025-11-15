@@ -1,6 +1,6 @@
 # med_goals/__manifest__.py
 {
-    "name": "Performance Evaluation System (MED-GOALS)",
+    "name": "MED-GOALS",
     "summary": "Employee performance evaluation, goals, cycles and leaderboards.",
     "description": """
 Performance Evaluation System (MED-GOALS)

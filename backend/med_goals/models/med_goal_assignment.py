@@ -88,3 +88,28 @@ class MedGoalAssignment(models.Model):
                 rec.completion_rate = (rec.actual_value or 0.0) / rec.target_value * 100.0
             else:
                 rec.completion_rate = 0.0
+
+    @api.model
+    def create(self, vals):
+        if not vals.get("name"):
+            emp_name = ""
+            goal_name = ""
+            cycle_name = ""
+
+            if vals.get("employee_id"):
+                emp = self.env["hr.employee"].browse(vals["employee_id"])
+                emp_name = emp.name or ""
+
+            if vals.get("goal_id"):
+                goal = self.env["med.goal.definition"].browse(vals["goal_id"])
+                goal_name = goal.name or ""
+
+            if vals.get("evaluation_cycle_id"):
+                cycle = self.env["med.evaluation.cycle"].browse(vals["evaluation_cycle_id"])
+                cycle_name = cycle.name or ""
+
+            # Construimos algo amigable
+            parts = [p for p in [emp_name, goal_name, cycle_name] if p]
+            vals["name"] = " - ".join(parts) if parts else _("Goal Assignment")
+
+        return super().create(vals)

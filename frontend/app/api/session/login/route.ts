@@ -1,8 +1,5 @@
-// app/api/session/login/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-// ❗ SOLO PARA DESARROLLO / PROYECTO DE LA U
-// Aceptar certificado autofirmado al llamar a Odoo
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export const runtime = 'nodejs';
@@ -22,7 +19,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Llamar a Odoo /web/session/authenticate
     const odooRes = await fetch(`${ODOO_URL}/web/session/authenticate`, {
       method: 'POST',
       headers: {
@@ -44,7 +40,6 @@ export async function POST(req: NextRequest) {
 
     const body = await odooRes.json().catch(() => null);
 
-    // 2. Validar respuesta de Odoo
     if (!odooRes.ok || !body || (body as any).error) {
       const b: any = body;
       const message =
@@ -69,7 +64,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Extraer el session_id de la cookie de Odoo
     const match = setCookieHeader.match(/session_id=([^;]+)/);
     const sessionId = match ? match[1] : null;
 
@@ -80,7 +74,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Respuesta + cookie HTTP-only en tu propio dominio
     const res = NextResponse.json(
       {
         status: 'ok',
@@ -95,7 +88,6 @@ export async function POST(req: NextRequest) {
       secure: true,
       sameSite: 'lax',
       path: '/',
-      // maxAge: 60 * 60 * 8, // opcional: 8h
     });
 
     return res;

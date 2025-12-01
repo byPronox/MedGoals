@@ -108,7 +108,6 @@ class MedGoalAssignment(models.Model):
                 cycle = self.env["med.evaluation.cycle"].browse(vals["evaluation_cycle_id"])
                 cycle_name = cycle.name or ""
 
-            # Construimos algo amigable
             parts = [p for p in [emp_name, goal_name, cycle_name] if p]
             vals["name"] = " - ".join(parts) if parts else _("Goal Assignment")
 

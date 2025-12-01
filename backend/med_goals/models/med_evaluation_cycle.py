@@ -1,6 +1,8 @@
+import logging # <--- IMPORTANTE: AGREGAR ESTO ARRIBA
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+_logger = logging.getLogger(__name__) # <--- IMPORTANTE
 
 class MedEvaluationCycle(models.Model):
     _name = "med.evaluation.cycle"
@@ -71,54 +73,124 @@ class MedEvaluationCycle(models.Model):
         for rec in self:
             if rec.state == "closed":
                 continue
-            # Optional: evita cerrar ciclos sin assignments
-            # if not rec.assignment_ids:
-            #     raise ValidationError(_("You cannot close a cycle without assignments."))
             rec._compute_scores()
             rec.state = "closed"
 
     def _compute_scores(self):
-        """Compute scores per employee for this cycle and create med.employee.score records."""
         self.ensure_one()
         Score = self.env["med.employee.score"]
+        Score.search([("cycle_id", "=", self.id)]).unlink()
 
-        # Delete existing scores for this cycle (recompute)
-        old_scores = Score.search([("cycle_id", "=", self.id)])
-        old_scores.unlink()
+        config = self.scoring_config_id
+        if not config:
+            w_goals, w_prod, w_qual, w_eco = 1.0, 0.0, 0.0, 0.0
+        else:
+            w_goals = config.weight_goals
+            w_prod = config.weight_productivity
+            w_qual = config.weight_quality
+            w_eco = config.weight_economic
 
-        # Group assignments by employee
         assignments = self.assignment_ids.filtered(lambda a: a.state != "cancelled")
-        by_employee = {}
-        for a in assignments:
-            by_employee.setdefault(a.employee_id, self.env["med.goal.assignment"])
-            by_employee[a.employee_id] |= a
+        employees = assignments.mapped("employee_id")
 
-        for employee, emp_assignments in by_employee.items():
-            total_weight = 0.0
-            weighted_score = 0.0
-            for a in emp_assignments:
-                weight = a.goal_id.weight or 0.0
-                total_weight += weight
-                # completion_rate 0-100 → score 0-10
-                score_10 = (a.completion_rate or 0.0) / 10.0
-                weighted_score += weight * score_10
+        days_in_cycle = (self.date_end - self.date_start).days + 1
+        if days_in_cycle <= 0: days_in_cycle = 1
 
-            final_score = 0.0
-            if total_weight:
-                final_score = weighted_score / total_weight
+        _logger.info(f"=== INICIANDO CÁLCULO CICLO: {self.name} (Días: {days_in_cycle}) ===")
 
-            Score.create(
-                {
-                    "employee_id": employee.id,
-                    "cycle_id": self.id,
-                    "score_total": final_score,
-                    "score_goals": final_score,
-                }
+        for employee in employees:
+            emp_assignments = assignments.filtered(lambda a: a.employee_id == employee)
+            
+            goals_list = emp_assignments.filtered(lambda a: a.goal_id.category == 'goal')
+            score_goals = self._calculate_weighted_average(goals_list)
+
+            prod_list = emp_assignments.filtered(lambda a: a.goal_id.category == 'productivity')
+            if prod_list:
+                score_prod = self._calculate_weighted_average(prod_list)
+            else:
+                logs = self.env['med.performance.log'].search([
+                    ('employee_id', '=', employee.id),
+                    ('date', '>=', self.date_start),
+                    ('date', '<=', self.date_end)
+                ])
+                total_val = sum(logs.mapped('metric_value'))
+                score_prod = min(total_val, 10.0)
+
+            qual_list = emp_assignments.filtered(lambda a: a.goal_id.category == 'quality')
+            score_qual = self._calculate_weighted_average(qual_list) if qual_list else 10.0
+
+            contract = self.env['hr.contract'].search([
+                ('employee_id', '=', employee.id),
+                ('state', 'in', ['open', 'draft']),
+            ], limit=1, order='date_start desc')
+
+            wage = contract.wage if contract else 0.0
+            cycle_cost = (wage / 30.0) * days_in_cycle
+
+            monetary_goals = emp_assignments.filtered(lambda a: a.goal_id.target_type == 'monetary')
+            value_generated = sum(monetary_goals.mapped('actual_value'))
+
+            score_eco = 0.0
+            if cycle_cost > 0:
+                roi = (value_generated - cycle_cost) / cycle_cost
+                if roi < 0:
+                    score_eco = max(0.0, 5.0 + (roi * 5.0))
+                else:
+                    score_eco = min(10.0, 5.0 + (roi * 2.5))
+            elif value_generated > 0:
+                score_eco = 10.0
+            
+            _logger.info(f"EMP: {employee.name} | Wage: {wage} | CostoCiclo: {cycle_cost}")
+            _logger.info(f"   -> Metas Monetarias Encontradas: {len(monetary_goals)}")
+            _logger.info(f"   -> Valor Generado (Suma Actual Value): {value_generated}")
+            _logger.info(f"   -> ROI Calculado: {((value_generated - cycle_cost) / cycle_cost) if cycle_cost else 0}")
+            _logger.info(f"   -> SCORE ECONOMICO FINAL: {score_eco}")
+
+            total_score = (
+                (score_goals * w_goals) +
+                (score_prod * w_prod) +
+                (score_qual * w_qual) +
+                (score_eco * w_eco)
             )
+            total_weight = w_goals + w_prod + w_qual + w_eco
+            final_score = total_score / total_weight if total_weight > 0 else 0.0
 
-        # Assign rankings
+            Score.create({
+                "employee_id": employee.id,
+                "cycle_id": self.id,
+                "score_goals": score_goals,
+                "score_productivity": score_prod,
+                "score_quality": score_qual,
+                "score_economic": score_eco,
+                "score_total": final_score,
+            })
+        
         self._compute_rankings()
 
+    def _calculate_weighted_average(self, assignments):
+        """Helper para calcular promedio ponderado 0-10 de un set de asignaciones"""
+        if not assignments:
+            return 0.0
+        
+        total_weight = 0.0
+        weighted_score = 0.0
+        
+        for a in assignments:
+            weight = a.goal_id.weight or 0.0
+            # Completion rate es 0-100, lo pasamos a 0-10
+            score_10 = (a.completion_rate or 0.0) / 10.0
+            # Cap en 10 (por si completaron 120%)
+            score_10 = min(score_10, 10.0)
+            
+            weighted_score += (score_10 * weight)
+            total_weight += weight
+            
+        if total_weight == 0:
+            return 0.0
+            
+        return weighted_score / total_weight
+
+    # Global rank / AREA / ESPECIALTY
     def _compute_rankings(self):
         scores = self.employee_score_ids.sorted(lambda s: -s.score_total)
 
@@ -163,7 +235,6 @@ class MedEvaluationCycle(models.Model):
                     last_score = s.score_total
                 s.rank_specialty = rank
 
-        # Mark top global performers (e.g., top 3)
         top_global = scores.sorted(lambda s: s.rank_global)[:3]
         for s in scores:
             s.is_top_performer = s in top_global

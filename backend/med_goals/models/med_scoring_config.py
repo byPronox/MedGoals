@@ -16,7 +16,7 @@ class MedScoringConfig(models.Model):
     )
     active = fields.Boolean(default=True)
 
-    # Relative weights
+    # weights
     weight_goals = fields.Float(string="Goals Weight", default=1.0)
     weight_productivity = fields.Float(string="Productivity Weight", default=0.0)
     weight_quality = fields.Float(string="Quality Weight", default=0.0)
@@ -41,12 +41,8 @@ class MedScoringConfig(models.Model):
         ),
     ]
 
-    @api.depends(
-        "weight_goals",
-        "weight_productivity",
-        "weight_quality",
-        "weight_economic",
-    )
+    # BACK-END VALIDATION: WEIGHTS AND PROPERTIES FOR SCORING CONFIGURATION
+    @api.depends("weight_goals","weight_productivity","weight_quality","weight_economic",)
     def _compute_normalized(self):
         for rec in self:
             total = (
@@ -58,13 +54,7 @@ class MedScoringConfig(models.Model):
             rec.total_weight = total
             rec.normalized = abs(total - 1.0) < 0.0001
 
-    # BACK-END VALIDATION: pesos no negativos y suma > 0
-    @api.constrains(
-        "weight_goals",
-        "weight_productivity",
-        "weight_quality",
-        "weight_economic",
-    )
+    @api.constrains("weight_goals","weight_productivity","weight_quality","weight_economic",)
     def _check_weights(self):
         for rec in self:
             weights = [

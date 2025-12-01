@@ -1,84 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-
-        <!-- MED-GOALS Performance Tab in Employee Form -->
         <record id="view_employee_form_med_goals" model="ir.ui.view">
             <field name="name">hr.employee.form.med.goals</field>
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-                <!-- Insert after hr_settings tab -->
+                
+                <div name="button_box" position="inside">
+                    <button name="%(action_med_evaluation_cycle)d" 
+                            type="action" 
+                            class="oe_stat_button" 
+                            icon="fa-trophy"
+                            context="{'search_default_employee_id': id}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value"><field name="last_score"/></span>
+                            <span class="o_stat_text">Last Score</span>
+                        </div>
+                    </button>
+                </div>
+
                 <xpath expr="//page[@name='hr_settings']" position="after">
                     <page string="Performance (MED-GOALS)" name="performance_tab">
-                        <group string="Classification">
-                            <field name="med_area_id"/>
-                            <!-- Dependent dropdown: specialties filtered by MED Area -->
-                            <field name="med_specialty_id"
-                                   domain="[('area_id', '=', med_area_id)]"
-                                   context="{'default_area_id': med_area_id}"/>
+                        
+                        <group>
+                            <group string="Professional Classification">
+                                <field name="med_area_id" placeholder="Select Area..."/>
+                                <field name="med_specialty_id"
+                                       domain="[('area_id', '=', med_area_id)]"
+                                       context="{'default_area_id': med_area_id}"
+                                       invisible="not med_area_id" 
+                                       required="med_area_id"/> 
+                            </group>
+                            
+                            <group string="Economic &amp; Ranking" invisible="last_score == 0.0">
+                                <field name="current_wage" widget="monetary" decoration-bf="1"/>
+                                <field name="last_score" widget="progressbar" options="{'max_value': 10}"/>
+                                <field name="is_top_performer" widget="boolean_toggle"/>
+                                <div class="o_row">
+                                    <label for="rank_area" string="Ranking:"/>
+                                    <span>#</span><field name="rank_area" class="fw-bold"/>
+                                    <span class="text-muted"> in Area</span>
+                                </div>
+                            </group>
                         </group>
 
-                        <group string="Last Evaluation">
-                            <field name="last_score" readonly="1"/>
-                            <field name="last_evaluation_date" readonly="1"/>
-                            <field name="is_top_performer" readonly="1"/>
-                            <field name="rank_area" readonly="1"/>
-                            <field name="rank_specialty" readonly="1"/>
-                        </group>
-
-                        <notebook>
-                            <!-- Goal Assignments -->
-                            <page string="Goal Assignments">
+                        <notebook invisible="not med_specialty_id">
+                            
+                            <page string="Active Goals">
                                 <field name="goal_assignment_ids"
                                        context="{'default_employee_id': active_id}">
-                                    <tree editable="bottom">
-                                        <field name="evaluation_cycle_id"/>
-                                        <field name="goal_id"/>
+                                    <tree editable="bottom" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" limit="10">
+                                        <field name="evaluation_cycle_id" options="{'no_create': True}"/>
+                                        <field name="goal_id" options="{'no_create': True}"/>
                                         <field name="target_value"/>
-                                        <field name="actual_value"/>
-                                        <field name="completion_rate"/>
-                                        <field name="state"/>
+                                        <field name="actual_value" readonly="1"/>
+                                        <field name="completion_rate" widget="progressbar"/>
+                                        <field name="state" widget="badge" 
+                                               decoration-success="state == 'done'"
+                                               decoration-warning="state == 'draft'"/>
                                     </tree>
                                 </field>
                             </page>
 
-                            <!-- Score History -->
-                            <page string="Score History">
-                                <field name="employee_score_ids">
-                                    <tree>
-                                        <field name="cycle_id"/>
-                                        <field name="score_total"/>
-                                        <field name="score_goals"/>
-                                        <field name="score_productivity"/>
-                                        <field name="score_quality"/>
-                                        <field name="score_economic"/>
-                                        <field name="rank_global"/>
-                                        <field name="rank_area"/>
-                                        <field name="rank_specialty"/>
-                                        <field name="is_top_performer"/>
-                                    </tree>
-                                </field>
-                            </page>
-
-                            <!-- Performance Logs -->
-                            <page string="Performance Logs">
+                            <page string="Evidence Logs" invisible="not goal_assignment_ids">
                                 <field name="performance_log_ids"
-                                       context="{'default_employee_id': active_id}">
-                                    <tree>
+                                       context="{'default_employee_id': active_id}"
+                                       readonly="1"> 
+                                    <tree default_order="date desc" limit="10">
                                         <field name="date"/>
                                         <field name="name"/>
-                                        <field name="assignment_id"/>
                                         <field name="metric_value"/>
+                                        <field name="assignment_id" optional="hide"/>
                                     </tree>
                                 </field>
                             </page>
+
+                            <page string="Score History" invisible="not employee_score_ids">
+                                <field name="employee_score_ids" readonly="1">
+                                    <tree default_order="cycle_id desc">
+                                        <field name="cycle_id"/>
+                                        <field name="score_goals" optional="hide"/>
+                                        <field name="score_productivity" optional="hide"/>
+                                        <field name="score_quality" optional="hide"/>
+                                        <field name="score_economic" optional="hide"/>
+                                        <field name="score_total" widget="progressbar" options="{'max_value': 10}"/>
+                                        <field name="is_top_performer" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </page>
+
                         </notebook>
                     </page>
                 </xpath>
             </field>
         </record>
-
     </data>
 </odoo>
-    

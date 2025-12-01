@@ -1,4 +1,3 @@
-# med_goals/__manifest__.py
 {
     "name": "MED-GOALS",
     "summary": "Employee performance evaluation, goals, cycles and leaderboards.",
@@ -14,7 +13,7 @@ scoring configuration and computed rankings / top performers per employee.
     "website": "https://example.com",
     "category": "Human Resources",
     "license": "LGPL-3",
-    "depends": ["base", "hr"],
+    "depends": ["base", "hr", "hr_contract"],
     "data": [
         "security/med_goals_security.xml",
         "security/ir.model.access.csv",

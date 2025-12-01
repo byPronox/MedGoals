@@ -1,0 +1,131 @@
+.emp-container {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.emp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.emp-header h1 {
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.emp-header p {
+  color: #666;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.emp-count span {
+  background-color: #2c3e50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.emp-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #eaeaea;
+  overflow: hidden;
+}
+
+.emp-table-wrapper {
+  overflow-x: auto;
+}
+
+.emp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.emp-table th {
+  text-align: left;
+  padding: 1.2rem;
+  background-color: #f8f9fa;
+  color: #444;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+}
+
+.emp-table td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  color: #333;
+}
+
+.emp-table tr:hover {
+  background-color: #fcfcfc;
+}
+
+/* Profile Column */
+.emp-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.emp-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.emp-name {
+  font-weight: 500;
+}
+
+/* Department Badge */
+.dept-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Contact Column */
+.emp-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.emp-link {
+  color: #2563eb;
+  text-decoration: none;
+}
+.emp-link:hover { text-decoration: underline; }
+
+.emp-phone {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.text-muted { color: #aaa; font-style: italic; }
+
+.emp-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}

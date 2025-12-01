@@ -35,7 +35,7 @@ class MedPerformanceLog(models.Model):
     )
     notes = fields.Text()
 
-    # BACK-END VALIDATION: metric_value cannot be negative (dato sensible de performance)
+    # BACK-END VALIDATION: SENSITIVE performance data PER LOG ENTRY
     @api.constrains("metric_value")
     def _check_metric_value(self):
         for rec in self:

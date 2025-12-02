@@ -127,14 +127,28 @@ export interface CycleInfo {
 
 export interface MyGoalsResponse {
   status: 'ok' | 'error';
+  message?: string;         
   employee_id?: number;
   records?: any[];
 }
+
 export interface MedGoalsEmployeeResponse {
-    status: 'ok' | 'error';
-    employee?: any; 
-    score_history?: any[];
+  status: 'ok' | 'error';
+  message?: string;          
+  employee?: any; 
+  score_history?: any[];
 }
+
+export interface ScoreHistoryRecord {
+  id: number;
+  date: string;
+  total_score?: number;           // o el nombre que uses en el backend para el puntaje total
+  score_economic?: number;
+  score_productivity?: number;
+  cycle_id?: { id: number; display_name: string } | null;
+  [key: string]: any;             // por si el backend envía extras, evitamos errores de TS
+}
+
 export interface DashboardResponse {
     status: 'ok' | 'error';
     employee: any;

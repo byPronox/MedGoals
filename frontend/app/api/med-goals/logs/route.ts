@@ -21,6 +21,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { assignment_id, ...rest } = body || {};
   const payload = {
-    create: True, // ojo: en TS debes usar true, aquí es ejemplo; abajo lo corrijo
+    create: true, // ojo: en TS debes usar true, aquí es ejemplo; abajo lo corrijo
   };
 }

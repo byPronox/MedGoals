@@ -40,6 +40,17 @@ class MedGoalDefinition(models.Model):
         "goal_id",
         string="Assignments",
     )
+    category = fields.Selection(
+        [
+            ("goal", "Strategic Goal"),
+            ("productivity", "Productivity Metric"),
+            ("quality", "Quality Standard"),
+        ],
+        string="Scoring Category",
+        default="goal",
+        required=True,
+        help="Category for the automatic calculation in the Evaluation Cycle."
+    )
 
     _sql_constraints = [
         (
@@ -49,6 +60,7 @@ class MedGoalDefinition(models.Model):
         ),
     ]
 
+    # BACK-END VALIDATION: GOAL DEFINITION DATA
     @api.constrains("weight", "default_target_value")
     def _check_weight_and_target(self):
         for rec in self:

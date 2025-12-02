@@ -18,6 +18,6 @@ access_med_evaluation_cycle_user,med.evaluation.cycle.user,model_med_evaluation_
 access_med_evaluation_cycle_manager,med.evaluation.cycle.manager,model_med_evaluation_cycle,med_goals.group_med_goals_manager,1,1,1,1
 
 access_med_employee_score_user,med.employee.score.user,model_med_employee_score,med_goals.group_med_goals_user,1,0,0,0
-access_med_employee_score_manager,med.employee.score.manager,model_med_employee_score,med_goals.group_med_goals_manager,1,0,0,0
+access_med_employee_score_manager,med.employee.score.manager,model_med_employee_score,med_goals.group_med_goals_manager,1,1,1,1
 
 access_med_scoring_config_manager,med.scoring.config.manager,model_med_scoring_config,med_goals.group_med_goals_manager,1,1,1,1

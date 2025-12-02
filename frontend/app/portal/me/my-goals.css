@@ -1,0 +1,138 @@
+.my-profile-header {
+    background: linear-gradient(to right, #ffffff, #f0f9ff);
+    border-left: 5px solid #38bdf8;
+}
+
+/* Ajuste para contener el Badge y el Botón de Logout */
+.header-actions {
+    display: flex;
+    flex-direction: column; 
+    gap: 0.75rem;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/* Estilo del botón de Logout */
+.btn-logout {
+    background-color: #ef4444; /* Rojo semáforo */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout:hover {
+    background-color: #dc2626;
+}
+
+.btn-logout:active {
+    transform: scale(0.98);
+}
+
+.btn-logout:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.skills-grid.simple {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-chip {
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #334155;
+}
+.skill-lvl { font-weight: 600; color: #3b82f6; margin-left: 4px; }
+
+/* My Goals Cards */
+.goals-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.goals-count {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.my-goals-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.my-goal-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.2rem;
+    background: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.my-goal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.mg-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.mg-cycle { color: #64748b; font-weight: 500; }
+
+.mg-state {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+.mg-state.draft { color: #94a3b8; }
+.mg-state.in_progress { color: #3b82f6; }
+.mg-state.done { color: #10b981; }
+.mg-state.cancelled { color: #ef4444; }
+
+.mg-title {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #0f172a;
+    line-height: 1.4;
+}
+
+.mg-progress-area { margin-bottom: 1rem; }
+.mg-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.mg-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.8rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.mg-metric {
+    display: flex;
+    flex-direction: column;
+}
+.mg-metric small { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
+.mg-metric strong { font-size: 1.1rem; color: #1e293b; }

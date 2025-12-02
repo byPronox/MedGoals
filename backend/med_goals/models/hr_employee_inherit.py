@@ -1,7 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
-
 class HREmployee(models.Model):
     _inherit = "hr.employee"
 
@@ -23,6 +22,34 @@ class HREmployee(models.Model):
         "employee_id",
         string="Score History",
     )
+
+    currency_id = fields.Many2one(
+        "res.currency", 
+        related="company_id.currency_id", 
+        readonly=True
+    )
+    
+    current_wage = fields.Monetary(
+        string="Current Wage",
+        currency_field="currency_id",
+        compute="_compute_current_wage",
+        help="Salario base del contrato activo (Open)."
+    )
+
+    def _compute_current_wage(self):
+        for employee in self:
+            if 'hr.contract' not in self.env:
+                employee.current_wage = 0.0
+                continue
+
+            contract = self.env['hr.contract'].search([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'open')
+            ], limit=1)
+            
+            employee.current_wage = contract.wage if contract else 0.0
+
+    # -------------------------------------------------------------------------
 
     last_score = fields.Float(
         string="Last Total Score",
@@ -71,60 +98,31 @@ class HREmployee(models.Model):
                 employee.rank_area = 0
                 employee.rank_specialty = 0
 
-    # -----------------------------
-    # BACK-END VALIDATIONS (SENSITIVE DATA)
-    # -----------------------------
-
+    # TUS VALIDACIONES ORIGINALES
     @api.constrains("private_email")
     def _check_private_email(self):
-        """Private email must be a valid basic email format."""
         for employee in self:
             email = (employee.private_email or "").strip()
-            if not email:
-                # allow empty, only validate if user set a value
-                continue
-
-            # Validación muy simple para el proyecto (no RFC completo)
+            if not email: continue
             if "@" not in email or "." not in email.split("@")[-1]:
-                raise ValidationError(
-                    _("Private email must be a valid email address.")
-                )
+                raise ValidationError(_("Private email must be a valid email address."))
 
     @api.constrains("private_phone")
     def _check_private_phone(self):
-        """Private phone must contain only digits and have a reasonable length."""
         for employee in self:
             phone = (employee.private_phone or "").strip()
-            if not phone:
-                continue
-
+            if not phone: continue
             if not phone.isdigit():
-                raise ValidationError(
-                    _("Private phone must contain only digits.")
-                )
-
+                raise ValidationError(_("Private phone must contain only digits."))
             if len(phone) < 7 or len(phone) > 15:
-                raise ValidationError(
-                    _("Private phone length must be between 7 and 15 digits.")
-                )
+                raise ValidationError(_("Private phone length must be between 7 and 15 digits."))
 
     @api.constrains("identification_id")
     def _check_identification_id(self):
-        """
-        Identification ID is considered a sensitive personal document.
-        For Ecuador, we enforce 10 numeric characters as a basic rule.
-        """
         for employee in self:
             ident = (employee.identification_id or "").strip()
-            if not ident:
-                continue
-
+            if not ident: continue
             if not ident.isdigit():
-                raise ValidationError(
-                    _("Identification ID must contain only digits.")
-                )
-
+                raise ValidationError(_("Identification ID must contain only digits."))
             if len(ident) != 10:
-                raise ValidationError(
-                    _("Identification ID must have exactly 10 digits (Ecuadorian ID format).")
-                )
+                raise ValidationError(_("Identification ID must have exactly 10 digits (Ecuadorian ID format)."))

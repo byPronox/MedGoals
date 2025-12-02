@@ -3,130 +3,154 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-.page::before,
-.page::after {
-  content: "";
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  transform: translate3d(0, 0, 0);
-}
-
-.page::before {
-  background: rgba(235, 95, 41, 0.35);
-  top: -120px;
-  right: -80px;
-}
-
-.page::after {
-  background: rgba(235, 95, 41, 0.28);
-  bottom: -140px;
-  left: -90px;
+  padding: 24px;
+  background: #f5f5f7;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
 }
 
 .cardWrapper {
   width: 100%;
   max-width: 420px;
-  position: relative;
-  z-index: 1;
 }
 
 .card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 40px 38px;
-  display: grid;
-  gap: 26px;
-  animation: floatCard 720ms ease-out;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-@keyframes floatCard {
-  0% {
-    opacity: 0;
-    transform: translateY(22px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.tagline {
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--color-primary);
+  background: #ffffff;
+  border-radius: 0;              
+  border: 1px solid #e5e5ea;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeUp 0.4s ease-out;
 }
 
 .title {
-  font-size: 1.9rem;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--color-accent);
+  letter-spacing: 0.18em;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 4px;
 }
 
 .subtitle {
-  color: var(--color-text-muted);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b7280;
+  text-align: center;
 }
 
 .form {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .field {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
 }
 
 .input {
-  background: linear-gradient(180deg, #fff, #fff9f6);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.18s ease, background-color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.08s ease;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus {
+  background: #ffffff;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 1px rgba(0, 113, 227, 0.75);
+}
+
+.input:active {
+  transform: scale(0.995);
 }
 
 .actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin-top: 8px;
 }
 
 .submit {
   width: 100%;
-  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #111827;
+  color: #f9fafb;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.08s ease,
+    box-shadow 0.18s ease;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+}
+
+.submit:hover:not(:disabled) {
+  background: #020617;
+  transform: translateY(-1px);
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+  box-shadow: none;
 }
 
 .error {
-  color: var(--color-danger);
-  background: rgba(214, 69, 69, 0.12);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: 0.9rem;
-}
-
-.footerNote {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+  margin-top: 4px;
+  font-size: 13px;
+  color: #dc2626;
   text-align: center;
 }
 
-.highlight {
-  color: var(--color-primary);
-  font-weight: 600;
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 24px 20px 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
 }

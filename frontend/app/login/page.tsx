@@ -22,7 +22,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok || data?.status !== 'ok') throw new Error(data?.message || 'Login failed');
-      router.replace('/admin');
+      router.replace('/portal');
     } catch (error: any) {
       setErr(error.message || String(error));
     } finally {
@@ -40,7 +40,6 @@ export default function LoginPage() {
               Enter your assigned credentials to manage your team goals.
             </p>
           </div>
-
           <form onSubmit={onLogin} className={styles.form}>
             <div className={styles.field}>
               <label htmlFor="email" className={styles.label}>

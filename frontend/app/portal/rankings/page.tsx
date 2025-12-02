@@ -44,15 +44,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
     <div className="rankings-container">
       <header className="rankings-header">
         <h1>🏆 Clasificación de Rendimiento</h1>
-        {cycleInfo ? (
-            <div className="cycle-badge">
-                <span className="cycle-label">Resultados Oficiales:</span>
-                <span className="cycle-value">{cycleInfo.name}</span>
-                <span className="cycle-date">({cycleInfo.date_end})</span>
-            </div>
-        ) : (
-            <p>Mostrando clasificación histórica global</p>
-        )}
+        <p>Top Performers y Dream Teams por Área</p>
       </header>
 
       {/* FILTRO DE ÁREA */}

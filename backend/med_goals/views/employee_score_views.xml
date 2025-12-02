@@ -54,7 +54,7 @@
 
         <!-- Action -->
         <record id="action_med_employee_score" model="ir.actions.act_window">
-            <field name="name">Employee Scores</field>
+            <field name="name">Employee ScoresSSSSSSS</field>
             <field name="res_model">med.employee.score</field>
             <field name="view_mode">tree,form</field>
         </record>

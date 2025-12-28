@@ -88,6 +88,12 @@ med_goals/
 - REST API (JSON endpoints) for frontend consumption.
 - Modular, MVC‑compliant Odoo structure.
 
+### **SOLID & Design Patterns (Backend)**
+- SRP: reusable helpers for scoring and JSON serialization now live in `backend/med_goals/services` to keep controllers/models lean.
+- OCP + Strategy: `ScoreEngine` composes strategies (`GoalsStrategy`, `ProductivityStrategy`, `QualityStrategy`, `EconomicStrategy`) so new score rules can be added without editing the evaluation model.
+- Factory: `ScoreEngineFactory` builds engines from cycle configs, centralizing instantiation logic.
+- Adapter: `RecordSerializer` converts Odoo many2one values to frontend‑friendly dicts across all API responses.
+
 ---
 
 ## Frontend — Next.js 15 (Vercel)

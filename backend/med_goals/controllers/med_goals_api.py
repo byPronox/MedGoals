@@ -2,6 +2,8 @@ from odoo import http, _
 from odoo.http import request
 from odoo.exceptions import AccessError
 
+from ..services.serializers import RecordSerializer
+
 
 def _ensure_group(group_xmlid):
     """Pequeño helper para restringir endpoints."""
@@ -10,6 +12,7 @@ def _ensure_group(group_xmlid):
 
 
 class MedGoalsApi(http.Controller):
+    serializer = RecordSerializer()
 
     def _get_current_employee(self):
         """Devuelve el hr.employee vinculado al usuario actual."""
@@ -60,13 +63,13 @@ class MedGoalsApi(http.Controller):
             ]
         )[0]
 
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
-
-        employee_info["med_area"] = m2o(employee_info.pop("med_area_id"))
-        employee_info["med_specialty"] = m2o(employee_info.pop("med_specialty_id"))
+        self.serializer.map_many2one(
+            employee_info,
+            {
+                "med_area_id": "med_area",
+                "med_specialty_id": "med_specialty",
+            },
+        )
 
         scores = Score.search_read(
             [("employee_id", "=", employee.id)],
@@ -88,7 +91,7 @@ class MedGoalsApi(http.Controller):
         )
 
         for s in scores:
-            s["cycle"] = m2o(s.pop("cycle_id"))
+            self.serializer.map_many2one(s, {"cycle_id": "cycle"})
 
         return {
             "status": "ok",
@@ -164,13 +167,8 @@ class MedGoalsApi(http.Controller):
             order="score_total desc",
         )
 
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
-
         for rec in scores:
-            rec["employee"] = m2o(rec.pop("employee_id"))
+            self.serializer.map_many2one(rec, {"employee_id": "employee"})
 
         total = Score.search_count(domain)
 
@@ -241,13 +239,8 @@ class MedGoalsApi(http.Controller):
             order="score_total desc",
         )
 
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
-
         for rec in scores:
-            rec["employee"] = m2o(rec.pop("employee_id"))
+            self.serializer.map_many2one(rec, {"employee_id": "employee"})
 
         cycle_info = cycle.read(["id", "name", "date_start", "date_end", "state"])[0]
 
@@ -284,12 +277,8 @@ class MedGoalsApi(http.Controller):
             fields=["id", "name", "code", "area_id", "description"],
             order="area_id, name",
         )
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
         for s in specs:
-            s["area"] = m2o(s.pop("area_id"))
+            self.serializer.map_many2one(s, {"area_id": "area"})
         return {"status": "ok", "records": specs}
 
     # =========================================================
@@ -329,14 +318,14 @@ class MedGoalsApi(http.Controller):
             order="create_date desc, id desc",
         )
         
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
-            
         for s in scores:
-            s["employee"] = m2o(s.pop("employee_id"))
-            s["cycle"] = m2o(s.pop("cycle_id"))
+            self.serializer.map_many2one(
+                s,
+                {
+                    "employee_id": "employee",
+                    "cycle_id": "cycle",
+                },
+            )
             # FIX: Mapear campos para compatibilidad con Frontend (Charts.tsx)
             s["date"] = s["create_date"] 
             # Generar un nombre para que no salga vacío en la tabla
@@ -377,14 +366,15 @@ class MedGoalsApi(http.Controller):
             fields=["id", "name", "employee_id", "goal_id", "evaluation_cycle_id", "target_value", "actual_value", "completion_rate", "state"],
             order="evaluation_cycle_id desc, employee_id, name",
         )
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
         for a in assignments:
-            a["employee"] = m2o(a.pop("employee_id"))
-            a["goal"] = m2o(a.pop("goal_id"))
-            a["cycle"] = m2o(a.pop("evaluation_cycle_id"))
+            self.serializer.map_many2one(
+                a,
+                {
+                    "employee_id": "employee",
+                    "goal_id": "goal",
+                    "evaluation_cycle_id": "cycle",
+                },
+            )
         return {"status": "ok", "records": assignments}
 
     # =========================================================
@@ -405,13 +395,14 @@ class MedGoalsApi(http.Controller):
             fields=["id", "name", "goal_id", "evaluation_cycle_id", "target_value", "actual_value", "completion_rate", "state"],
             order="evaluation_cycle_id desc, name",
         )
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
         for a in assignments:
-            a["goal"] = m2o(a.pop("goal_id"))
-            a["cycle"] = m2o(a.pop("evaluation_cycle_id"))
+            self.serializer.map_many2one(
+                a,
+                {
+                    "goal_id": "goal",
+                    "evaluation_cycle_id": "cycle",
+                },
+            )
         return {"status": "ok", "employee_id": employee.id, "employee_name": employee.name, "records": assignments}
 
     # =========================================================
@@ -453,13 +444,13 @@ class MedGoalsApi(http.Controller):
             ]
         )[0]
 
-        def m2o(val):
-            if isinstance(val, (list, tuple)) and len(val) >= 2:
-                return {"id": val[0], "name": val[1]}
-            return None
-
-        emp_vals["med_area"] = m2o(emp_vals.pop("med_area_id"))
-        emp_vals["med_specialty"] = m2o(emp_vals.pop("med_specialty_id"))
+        self.serializer.map_many2one(
+            emp_vals,
+            {
+                "med_area_id": "med_area",
+                "med_specialty_id": "med_specialty",
+            },
+        )
 
         Cycle = request.env["med.evaluation.cycle"].sudo()
         Score = request.env["med.employee.score"].sudo()
@@ -521,7 +512,7 @@ class MedGoalsApi(http.Controller):
                 limit=5,
             )
             for rec in top_scores:
-                rec["employee"] = m2o(rec.pop("employee_id"))
+                self.serializer.map_many2one(rec, {"employee_id": "employee"})
                 top_records.append(rec)
 
         return {

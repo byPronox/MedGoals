@@ -1,3 +1,7 @@
+import json
+import math
+from urllib.parse import urlencode
+
 from odoo import http, _
 from odoo.http import request
 from odoo.exceptions import AccessError
@@ -13,6 +17,82 @@ def _ensure_group(group_xmlid):
 
 class MedGoalsApi(http.Controller):
     serializer = RecordSerializer()
+
+    # =========================================================
+    # 1) API PÚBLICA READ-ONLY DE EMPLEADOS
+    # =========================================================
+    @http.route(
+        "/med_goals/api/public/employees",
+        type="http",
+        auth="public",
+        methods=["GET"],
+        csrf=False,
+    )
+    def public_employees(self, **kwargs):
+        Employee = request.env["hr.employee"].sudo()
+
+        # Paginación segura
+        page = int(kwargs.get("page", 1) or 1)
+        page_size = int(kwargs.get("page_size", 20) or 20)
+        page = max(page, 1)
+        page_size = max(1, min(page_size, 100))
+
+        domain = [("company_id", "=", request.env.company.id)]
+        total = Employee.search_count(domain)
+        pages = math.ceil(total / page_size) if page_size else 1
+
+        employees = Employee.search(
+            domain,
+            limit=page_size,
+            offset=(page - 1) * page_size,
+            order="name asc",
+        )
+
+        data = employees.read(
+            [
+                "name",
+                "job_title",
+                "work_email",
+                "work_phone",
+                "med_area_id",
+                "med_specialty_id",
+                "last_score",
+                "last_evaluation_date",
+                "is_top_performer",
+                "rank_area",
+                "rank_specialty",
+            ]
+        )
+
+        for rec in data:
+            self.serializer.map_many2one(
+                rec,
+                {
+                    "med_area_id": "area",
+                    "med_specialty_id": "specialty",
+                },
+            )
+
+        base_url = request.httprequest.base_url
+
+        def build_url(target_page):
+            params = request.httprequest.args.to_dict(flat=True)
+            params.update({"page": target_page, "page_size": page_size})
+            return f"{base_url}?{urlencode(params)}"
+
+        info = {
+            "count": total,
+            "pages": pages,
+            "next": build_url(page + 1) if page < pages else None,
+            "prev": build_url(page - 1) if page > 1 else None,
+        }
+
+        payload = {"info": info, "results": data}
+        return http.Response(
+            json.dumps(payload, default=str),
+            status=200,
+            headers={"Content-Type": "application/json"},
+        )
 
     def _get_current_employee(self):
         """Devuelve el hr.employee vinculado al usuario actual."""

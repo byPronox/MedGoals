@@ -128,6 +128,32 @@ ODOO_DB=bitnami_odoo
 | `GET`  | `/api/goals` | Retrieve goal definitions and assignments |
 | `POST` | `/api/logs` | Register a new performance log entry |
 | `GET`  | `/api/scores/leaderboard` | Get top performers by area/specialty |
+| `GET`  | `/med_goals/api/public/employees` | Public, paginated JSON of employees with last score (Rick & Morty–style `info/results`) |
+
+### Public API example
+```
+GET https://<your-ec2-public-ip>/med_goals/api/public/employees?page=1&page_size=20
+```
+Response shape:
+```json
+{
+  "info": { "count": 42, "pages": 3, "next": "...page=2", "prev": null },
+  "results": [
+    {
+      "name": "John Doe",
+      "job_title": "Nurse",
+      "work_email": "john@example.com",
+      "area": { "id": 3, "name": "ER" },
+      "specialty": { "id": 7, "name": "Trauma" },
+      "last_score": 8.7,
+      "last_evaluation_date": "2024-10-01 12:00:00",
+      "is_top_performer": true,
+      "rank_area": 1,
+      "rank_specialty": 2
+    }
+  ]
+}
+```
 
 ---
 
